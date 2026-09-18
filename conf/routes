@@ -1,2 +1,6 @@
-GET     /       controllers.HomeController.index
-GET     /api     controllers.ApplicationController.index
+GET     /           controllers.HomeController.index
+GET     /api        controllers.ApplicationController.index()
+POST    /api        controllers.ApplicationController.create()
+GET     /api/:id    controllers.ApplicationController.read(id: String)
+PUT     /api/:id    controllers.ApplicationController.update(id: String)
+DELETE  /api/:id    controllers.ApplicationController.delete(id: String)
