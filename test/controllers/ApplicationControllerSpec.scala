@@ -1,13 +1,26 @@
 package controllers
 
-import baseSpec.BaseSpecWithApplication
+import org.scalatestplus.play._
+import org.scalatestplus.play.guice._
+import play.api.http.Status
+import play.api.test.{FakeRequest, Injecting}
+import play.api.test.Helpers._
 
-class ApplicationControllerSpec extends BaseSpecWithApplication {
+class ApplicationControllerSpec
+  extends PlaySpec
+    with GuiceOneAppPerTest
+    with Injecting {
 
-  "ApplicationController" should {
+  "ApplicationController.index" should {
+    "return NOT_IMPLEMENTED" in {
 
-    "have a test" in {
-      true mustBe true
+      val testApplicationController =
+        app.injector.instanceOf[ApplicationController]
+
+      val result =
+        testApplicationController.index()(FakeRequest())
+
+      status(result) mustBe Status.NOT_IMPLEMENTED
     }
   }
 }
