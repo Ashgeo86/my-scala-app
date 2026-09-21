@@ -1,10 +1,11 @@
-package baseSpec
+^X
+Bpackage baseSpec
 
 import org.scalatestplus.play._
 import org.scalatestplus.play.guice._
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.Injecting
-import repositories.DataRepository
+import repositories.DataRepository.DataRepository
 import services.MongoService
 
 abstract class BaseSpecWithApplication
@@ -19,5 +20,4 @@ abstract class BaseSpecWithApplication
     app.injector.instanceOf[DataRepository]
 
   lazy val mongoService: MongoService =
-    app.injector.instanceOf[MongoService]
-}
+    app.injector.instanceOf[MongoServic
