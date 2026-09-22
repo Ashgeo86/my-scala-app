@@ -12,7 +12,7 @@ class ApplicationControllerSpec
     with Injecting {
 
   "ApplicationController.index" should {
-    "return NOT_IMPLEMENTED" in {
+    "return OK" in {
 
       val testApplicationController =
         app.injector.instanceOf[ApplicationController]
@@ -20,7 +20,7 @@ class ApplicationControllerSpec
       val result =
         testApplicationController.index()(FakeRequest())
 
-      status(result) mustBe Status.NOT_IMPLEMENTED
+      status(result) mustBe Status.OK
     }
   }
 }
