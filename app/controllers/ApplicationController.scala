@@ -26,9 +26,21 @@ class ApplicationController @Inject()(
 
   def create() = TODO
 
-  def read(id: String) = TODO
+  def read(id: String): Action[AnyContent] = Action.async { implicit request =>
+    dataRepository.read(id).map {
+      case Some(dataModel) =>
+        Ok(Json.toJson(dataModel))
+
+      case None =>
+        NotFound
+    }
+  }
 
   def update(id: String) = TODO
 
-  def delete(id: String) = TODO
+  def delete(id: String): Action[AnyContent] = Action.async { implicit request =>
+    dataRepository.delete(id).map { _ =>
+      Accepted
+    }
+  }
 }
