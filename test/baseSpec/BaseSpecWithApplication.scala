@@ -1,9 +1,10 @@
 package baseSpec
 
 import org.scalatestplus.play._
-import org.scalatestplus.play.guice._
+import org.scalatestplus.play.guice.GuiceOneAppPerTest
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.mvc.ControllerComponents
+import play.api.mvc.{AnyContentAsEmpty, ControllerComponents}
+import play.api.test.FakeRequest
 import repositories.DataRepository
 import services.MongoService
 
@@ -27,4 +28,7 @@ abstract class BaseSpecWithApplication
 
   override def fakeApplication() =
     new GuiceApplicationBuilder().build()
+
+  def buildPost(url: String): FakeRequest[AnyContentAsEmpty.type] =
+    FakeRequest("POST", url)
 }
