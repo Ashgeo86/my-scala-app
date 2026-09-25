@@ -10,6 +10,7 @@ scalaVersion := "2.13.16"
 libraryDependencies ++= Seq(
   "org.mongodb.scala" %% "mongo-scala-driver" % "5.6.1",
   guice,
+  ws,
   "org.scalatest" %% "scalatest" % "3.2.15" % Test,
   "org.scalamock" %% "scalamock" % "5.2.0" % Test,
   "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.2" % Test
