@@ -31,4 +31,7 @@ abstract class BaseSpecWithApplication
 
   def buildPost(url: String): FakeRequest[AnyContentAsEmpty.type] =
     FakeRequest("POST", url)
+
+  def buildGet(url: String): FakeRequest[AnyContentAsEmpty.type] =
+    FakeRequest("GET", url)
 }

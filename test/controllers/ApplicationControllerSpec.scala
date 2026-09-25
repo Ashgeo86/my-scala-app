@@ -36,18 +36,22 @@ class ApplicationControllerSpec
     }
   }
 
-  "ApplicationController.create" should {
+  "ApplicationController.read" should {
 
-    "create a book in the database" in {
+    "find a book in the database by id" in {
 
       val request: FakeRequest[JsValue] =
-        buildPost("/api")
+        buildGet(s"/api/${dataModel._id}")
           .withBody[JsValue](Json.toJson(dataModel))
 
       val createdResult: Future[Result] =
         TestApplicationController.create()(request)
 
-      status(createdResult) mustBe Status.CREATED
+      val readResult: Future[Result] =
+        TestApplicationController.read("abcd")(FakeRequest())
+
+      status(readResult) mustBe Status.OK
+      contentAsJson(readResult).as[DataModel] mustBe dataModel
     }
   }
 }
