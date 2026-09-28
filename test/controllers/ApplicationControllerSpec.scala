@@ -15,7 +15,8 @@ class ApplicationControllerSpec
 
   lazy val TestApplicationController = new ApplicationController(
     component,
-    repository
+    repository,
+    service
   )
 
   private val dataModel: DataModel = DataModel(

@@ -4,6 +4,7 @@ import models.DataModel
 import play.api.libs.json.{JsError, JsSuccess, JsValue, Json}
 import play.api.mvc.{Action, AnyContent, BaseController, ControllerComponents}
 import repositories.DataRepository
+import services.ApplicationService
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -11,7 +12,8 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class ApplicationController @Inject()(
                                        val controllerComponents: ControllerComponents,
-                                       dataRepository: DataRepository
+                                       dataRepository: DataRepository,
+                                       service: ApplicationService
                                      )(implicit ec: ExecutionContext) extends BaseController {
 
   def index(): Action[AnyContent] = Action.async { implicit request =>
@@ -62,4 +64,11 @@ class ApplicationController @Inject()(
       Accepted
     }
   }
+
+  def getGoogleBook(search: String, term: String): Action[AnyContent] =
+    Action.async { implicit request =>
+      service.getGoogleBook(search = search, term = term).map { dataModel =>
+        Ok(Json.toJson(dataModel))
+      }
+    }
 }
