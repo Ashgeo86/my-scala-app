@@ -1,6 +1,7 @@
 package repositories
 
 import models.DataModel
+import models.APIError
 import org.bson.conversions.Bson
 import org.mongodb.scala._
 import org.mongodb.scala.bson.Document
@@ -34,12 +35,16 @@ class DataRepository @Inject()(
       pageCount = document.getInteger("pageCount")
     )
 
-  def index(): Future[Either[Int, Seq[DataModel]]] =
+  def index(): Future[Either[APIError.BadAPIResponse, Seq[DataModel]]] =
     collection
       .find()
       .toFuture()
       .map { documents =>
-        Right(documents.map(fromDocument))
+        if (documents.nonEmpty) {
+          Right(documents.map(fromDocument))
+        } else {
+          Left(APIError.BadAPIResponse(404, "Books cannot be found"))
+        }
       }
 
   def create(dataModel: DataModel): Future[DataModel] =

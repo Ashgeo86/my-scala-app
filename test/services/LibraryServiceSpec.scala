@@ -1,8 +1,9 @@
 package services
 
 import baseSpec.BaseSpecWithApplication
+import cats.data.EitherT
 import connectors.LibraryConnector
-import models.DataModel
+import models.{APIError, DataModel}
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
@@ -35,37 +36,51 @@ class LibraryServiceSpec
       _: ExecutionContext
     ))
       .expects(url, *, *)
-      .returning(Future(gameOfThrones.as[DataModel]))
+      .returning(
+        EitherT.rightT[Future, APIError](gameOfThrones.as[DataModel])
+      )
       .once()
 
     whenReady(
-      testService.getGoogleBook(
-        urlOverride = Some(url),
-        search = "",
-        term = ""
-      )
+      testService
+        .getGoogleBook(
+          urlOverride = Some(url),
+          search = "",
+          term = ""
+        )
+        .value
     ) { result =>
-      result shouldBe gameOfThrones.as[DataModel]
+      result shouldBe Right(gameOfThrones.as[DataModel])
     }
   }
 
-  "return an error" in {
+  "getGoogleBook returns an error" in {
+
     val url: String = "testUrl"
+
+    val error =
+      APIError.BadAPIResponse(500, "Something went wrong")
 
     (mockConnector.get[DataModel](_: String)(
       _: OFormat[DataModel],
       _: ExecutionContext
     ))
       .expects(url, *, *)
-      .returning(Future.failed(new RuntimeException("Something went wrong")))
+      .returning(
+        EitherT.leftT[Future, DataModel](error)
+      )
       .once()
 
     whenReady(
       testService
-        .getGoogleBook(urlOverride = Some(url), search = "", term = "")
-        .failed
+        .getGoogleBook(
+          urlOverride = Some(url),
+          search = "",
+          term = ""
+        )
+        .value
     ) { result =>
-      result shouldBe a[RuntimeException]
+      result shouldBe Left(error)
     }
   }
 }

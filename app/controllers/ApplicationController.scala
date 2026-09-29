@@ -22,7 +22,7 @@ class ApplicationController @Inject()(
         Ok(Json.toJson(item))
 
       case Left(error) =>
-        Status(error)(Json.toJson("Unable to find any books"))
+        Status(error.httpResponseStatus)(Json.toJson(error.reason))
     }
   }
 
@@ -67,8 +67,13 @@ class ApplicationController @Inject()(
 
   def getGoogleBook(search: String, term: String): Action[AnyContent] =
     Action.async { implicit request =>
-      service.getGoogleBook(search = search, term = term).map { dataModel =>
-        Ok(Json.toJson(dataModel))
-      }
+      service
+        .getGoogleBook(search = search, term = term)
+        .fold(
+          error =>
+            Status(error.httpResponseStatus)(Json.toJson(error.reason)),
+          dataModel =>
+            Ok(Json.toJson(dataModel))
+        )
     }
 }

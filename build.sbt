@@ -11,6 +11,7 @@ libraryDependencies ++= Seq(
   "org.mongodb.scala" %% "mongo-scala-driver" % "5.6.1",
   guice,
   ws,
+  "org.typelevel" %% "cats-core" % "2.3.0",
   "org.scalatest" %% "scalatest" % "3.2.15" % Test,
   "org.scalamock" %% "scalamock" % "5.2.0" % Test,
   "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.2" % Test
