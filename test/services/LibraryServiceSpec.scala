@@ -48,4 +48,24 @@ class LibraryServiceSpec
       result shouldBe gameOfThrones.as[DataModel]
     }
   }
+
+  "return an error" in {
+    val url: String = "testUrl"
+
+    (mockConnector.get[DataModel](_: String)(
+      _: OFormat[DataModel],
+      _: ExecutionContext
+    ))
+      .expects(url, *, *)
+      .returning(Future.failed(new RuntimeException("Something went wrong")))
+      .once()
+
+    whenReady(
+      testService
+        .getGoogleBook(urlOverride = Some(url), search = "", term = "")
+        .failed
+    ) { result =>
+      result shouldBe a[RuntimeException]
+    }
+  }
 }
