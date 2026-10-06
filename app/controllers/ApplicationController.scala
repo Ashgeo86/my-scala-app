@@ -3,8 +3,9 @@ package controllers
 import models.DataModel
 import play.api.libs.json.{JsError, JsSuccess, JsValue, Json}
 import play.api.mvc.{Action, AnyContent, BaseController, ControllerComponents}
-import repositories.DataRepository
+
 import services.ApplicationService
+import services.RepositoryService
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -12,12 +13,12 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class ApplicationController @Inject()(
                                        val controllerComponents: ControllerComponents,
-                                       dataRepository: DataRepository,
+                                       repoService: RepositoryService,
                                        service: ApplicationService
                                      )(implicit ec: ExecutionContext) extends BaseController {
 
   def index(): Action[AnyContent] = Action.async { implicit request =>
-    dataRepository.index().map {
+    repoService.index().map {
       case Right(item: Seq[DataModel]) =>
         Ok(Json.toJson(item))
 
@@ -26,16 +27,17 @@ class ApplicationController @Inject()(
     }
   }
 
-  def create(): Action[JsValue] = Action.async(parse.json) { implicit request =>
+  def create(): Action[JsValue] =
+    Action.async(controllerComponents.parsers.json) { implicit request =>
     request.body.validate[DataModel] match {
       case JsSuccess(dataModel, _) =>
-        dataRepository.create(dataModel).map(_ => Created)
+        repoService.create(dataModel).map(_ => Created)
       case JsError(_) => Future(BadRequest)
     }
   }
 
   def read(id: String): Action[AnyContent] = Action.async { implicit request =>
-    dataRepository.read(id).map {
+    repoService.read(id).map {
       case Some(dataModel) =>
         Ok(Json.toJson(dataModel))
 
@@ -45,12 +47,12 @@ class ApplicationController @Inject()(
   }
 
   def update(id: String): Action[play.api.libs.json.JsValue] =
-    Action.async(parse.json) { implicit request =>
+    Action.async(controllerComponents.parsers.json) { implicit request =>
 
       request.body.validate[DataModel] match {
 
         case JsSuccess(dataModel, _) =>
-          dataRepository.update(id, dataModel).map { _ =>
+          repoService.update(id, dataModel).map { _ =>
             Accepted(Json.toJson(dataModel))
           }
 
@@ -60,7 +62,7 @@ class ApplicationController @Inject()(
     }
 
   def delete(id: String): Action[AnyContent] = Action.async { implicit request =>
-    dataRepository.delete(id).map { _ =>
+    repoService.delete(id).map { _ =>
       Accepted
     }
   }

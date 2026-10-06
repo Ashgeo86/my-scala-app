@@ -6,7 +6,7 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.mvc.{AnyContentAsEmpty, ControllerComponents}
 import play.api.test.FakeRequest
 import repositories.DataRepository
-import services.{ApplicationService, MongoService}
+import services.{ApplicationService, MongoService, RepositoryService}
 
 import scala.concurrent.ExecutionContext
 
@@ -28,6 +28,9 @@ abstract class BaseSpecWithApplication
 
   lazy val service: ApplicationService =
     app.injector.instanceOf[ApplicationService]
+
+  lazy val repoService: RepositoryService =
+    app.injector.instanceOf[RepositoryService]
 
   override def fakeApplication() =
     new GuiceApplicationBuilder().build()
