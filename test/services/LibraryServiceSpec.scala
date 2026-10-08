@@ -1,14 +1,13 @@
 package services
 
 import baseSpec.BaseSpecWithApplication
+import cats.data.EitherT
 import connectors.LibraryConnector
 import models.{APIError, DataModel}
-import org.apache.pekko.util.Helpers.Requiring
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.should.Matchers.convertToAnyShouldWrapper
 import play.api.libs.json.{JsValue, Json, OFormat}
-import cats.data.EitherT
 
 import scala.concurrent.{ExecutionContext, Future}
 
