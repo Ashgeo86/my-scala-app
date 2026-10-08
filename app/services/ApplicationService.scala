@@ -17,7 +17,7 @@ class ApplicationService @Inject()(connector: LibraryConnector) {
                    )(implicit ec: ExecutionContext): EitherT[Future, APIError, DataModel] =
     connector.get[DataModel](
       urlOverride.getOrElse(
-        s"https://www.googleapis.com/books/v1/volumes?q=$search%$term"
+        s"https://www.googleapis.com/books/v1/volumes?q=$search:$term"
       )
     )
 }

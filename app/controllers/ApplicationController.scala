@@ -156,4 +156,8 @@ class ApplicationController @Inject()(
             Ok(Json.toJson(dataModel))
         )
     }
+
+  def example(): Action[AnyContent] = Action.async {implicit request =>
+    Future.successful(Ok(views.html.example()))
+  }
 }
