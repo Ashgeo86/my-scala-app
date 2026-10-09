@@ -6,3 +6,4 @@ PUT     /api/:id    controllers.ApplicationController.update(id: String)
 DELETE  /api/:id    controllers.ApplicationController.delete(id: String)
 
 GET     /library/google/:isbn    controllers.ApplicationController.getGoogleBook(isbn: String)
+GET     /assets/*file     controllers.Assets.versioned(path="/public", file: Asset)
