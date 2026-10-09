@@ -13,7 +13,7 @@ class ApplicationController @Inject()(
                                        val controllerComponents: ControllerComponents,
                                        repoService: RepositoryService,
                                        service: ApplicationService
-                                     )(implicit ec: ExecutionContext) extends BaseController {
+                                     )(implicit ec: ExecutionContext) extends BaseController with play.api.i18n.I18nSupport {
 
   private def handleResult[A](
                                result: Future[Either[APIError, A]]
