@@ -1,8 +1,9 @@
+
 package models
 
-import play.api.data.Forms._
-import play.api.data._
 import play.api.libs.json.{Json, OFormat}
+import play.api.data._
+import play.api.data.Forms._
 
 case class DataModel(
                       _id: String,
@@ -13,17 +14,13 @@ case class DataModel(
 
 object DataModel {
   implicit val formats: OFormat[DataModel] = Json.format[DataModel]
-}
 
-case class Person(name: String, surname: String, age: Int)
-object Person {
-  implicit val formats: OFormat[Person] = Json.format[Person]
-
-  val personForm: Form[Person] = Form(
+  val dataModelForm: Form[DataModel] = Form(
     mapping(
-      "name" -> text,
-      "surname" -> text,
-      "age" -> number
-    )(Person.apply)(Person.unapply)
+      "_id" -> nonEmptyText,
+      "name" -> nonEmptyText,
+      "description" -> nonEmptyText,
+      "pageCount" -> number
+    )(DataModel.apply)(DataModel.unapply)
   )
 }

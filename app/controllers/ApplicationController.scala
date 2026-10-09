@@ -2,7 +2,7 @@ package controllers
 
 import models.{APIError, DataModel}
 import play.api.libs.json.{JsError, JsSuccess, JsValue, Json}
-import play.api.mvc.{Action, AnyContent, BaseController, ControllerComponents, Result}
+import play.api.mvc._
 import services.{ApplicationService, RepositoryService}
 
 import javax.inject.{Inject, Singleton}
@@ -111,4 +111,12 @@ class ApplicationController @Inject()(
             Ok(Json.toJson(book))
         )
     }
+
+  def addBook(): Action[AnyContent] = Action { implicit request =>
+    Ok(views.html.addBook(DataModel.dataModelForm))
+  }
+
+  def addBookForm(): Action[AnyContent] = Action { implicit request =>
+    ???
+  }
 }

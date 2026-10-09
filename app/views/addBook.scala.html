@@ -1,0 +1,19 @@
+@import models.DataModel
+@import play.api.data.Form
+@import helper._
+
+@(dataModelForm: Form[DataModel])(implicit request: play.api.mvc.RequestHeader, messages: play.api.i18n.Messages)
+
+@main("Add Book") {
+<div>
+    @helper.form(action = routes.ApplicationController.addBookForm()) {
+    @helper.CSRF.formField
+    @helper.inputText(dataModelForm("_id"))
+    @helper.inputText(dataModelForm("name"))
+    @helper.inputText(dataModelForm("description"))
+    @helper.inputText(dataModelForm("pageCount"))
+
+    <input class="submitButton" type="submit" value="Submit">
+    }
+</div>
+}
