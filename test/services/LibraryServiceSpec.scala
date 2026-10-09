@@ -44,9 +44,8 @@ class LibraryServiceSpec
     whenReady(
       testService
         .getGoogleBook(
-          urlOverride = Some(url),
-          search = "",
-          term = ""
+          isbn = "",
+          urlOverride = Some(url)
         )
         .value
     ) { result =>
@@ -74,9 +73,8 @@ class LibraryServiceSpec
     whenReady(
       testService
         .getGoogleBook(
-          urlOverride = Some(url),
-          search = "",
-          term = ""
+          isbn = "",
+          urlOverride = Some(url)
         )
         .value
     ) { result =>

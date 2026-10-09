@@ -1,8 +1,8 @@
 package controllers
 
-import models.DataModel
+import models.{APIError, DataModel}
 import play.api.libs.json.{JsError, JsSuccess, JsValue, Json}
-import play.api.mvc.{Action, AnyContent, BaseController, ControllerComponents}
+import play.api.mvc.{Action, AnyContent, BaseController, ControllerComponents, Result}
 import services.{ApplicationService, RepositoryService}
 
 import javax.inject.{Inject, Singleton}
@@ -15,32 +15,32 @@ class ApplicationController @Inject()(
                                        service: ApplicationService
                                      )(implicit ec: ExecutionContext) extends BaseController {
 
-  def index(): Action[AnyContent] = Action.async {
-    repoService.index().map {
-      case Right(books) =>
-        Ok(Json.toJson(books))
+  private def handleResult[A](
+                               result: Future[Either[APIError, A]]
+                             )(onSuccess: A => Result): Future[Result] =
+    result.map {
+      case Right(value) =>
+        onSuccess(value)
 
       case Left(error) =>
         Status(error.httpResponseStatus)(
           Json.toJson(error.reason)
         )
     }
-  }
+
+  def index(): Action[AnyContent] =
+    Action.async {
+      handleResult(repoService.index()) { books =>
+        Ok(Json.toJson(books))
+      }
+    }
 
   def create(): Action[JsValue] =
     Action.async(controllerComponents.parsers.json) { request =>
-
       request.body.validate[DataModel] match {
-
         case JsSuccess(dataModel, _) =>
-          repoService.create(dataModel).map {
-            case Right(book) =>
-              Created(Json.toJson(book))
-
-            case Left(error) =>
-              Status(error.httpResponseStatus)(
-                Json.toJson(error.reason)
-              )
+          handleResult(repoService.create(dataModel)) { book =>
+            Created(Json.toJson(book))
           }
 
         case JsError(_) =>
@@ -50,49 +50,24 @@ class ApplicationController @Inject()(
 
   def read(id: String): Action[AnyContent] =
     Action.async {
-
-      repoService.read(id).map {
-
-        case Right(book) =>
-          Ok(Json.toJson(book))
-
-        case Left(error) =>
-          Status(error.httpResponseStatus)(
-            Json.toJson(error.reason)
-          )
+      handleResult(repoService.read(id)) { book =>
+        Ok(Json.toJson(book))
       }
     }
 
   def findByName(name: String): Action[AnyContent] =
     Action.async {
-
-      repoService.findByName(name).map {
-
-        case Right(books) =>
-          Ok(Json.toJson(books))
-
-        case Left(error) =>
-          Status(error.httpResponseStatus)(
-            Json.toJson(error.reason)
-          )
+      handleResult(repoService.findByName(name)) { books =>
+        Ok(Json.toJson(books))
       }
     }
 
   def update(id: String): Action[JsValue] =
     Action.async(controllerComponents.parsers.json) { request =>
-
       request.body.validate[DataModel] match {
-
         case JsSuccess(dataModel, _) =>
-          repoService.update(id, dataModel).map {
-
-            case Right(_) =>
-              Accepted(Json.toJson(dataModel))
-
-            case Left(error) =>
-              Status(error.httpResponseStatus)(
-                Json.toJson(error.reason)
-              )
+          handleResult(repoService.update(id, dataModel)) { _ =>
+            Accepted(Json.toJson(dataModel))
           }
 
         case JsError(_) =>
@@ -105,19 +80,10 @@ class ApplicationController @Inject()(
                    field: String
                  ): Action[JsValue] =
     Action.async(controllerComponents.parsers.json) { request =>
-
       request.body.validate[String] match {
-
         case JsSuccess(value, _) =>
-          repoService.updateField(id, field, value).map {
-
-            case Right(_) =>
-              Accepted
-
-            case Left(error) =>
-              Status(error.httpResponseStatus)(
-                Json.toJson(error.reason)
-              )
+          handleResult(repoService.updateField(id, field, value)) { _ =>
+            Accepted
           }
 
         case JsError(_) =>
@@ -127,37 +93,22 @@ class ApplicationController @Inject()(
 
   def delete(id: String): Action[AnyContent] =
     Action.async {
-
-      repoService.delete(id).map {
-
-        case Right(_) =>
-          Accepted
-
-        case Left(error) =>
-          Status(error.httpResponseStatus)(
-            Json.toJson(error.reason)
-          )
+      handleResult(repoService.delete(id)) { _ =>
+        NoContent
       }
     }
 
-  def getGoogleBook(
-                     search: String,
-                     term: String
-                   ): Action[AnyContent] =
+  def getGoogleBook(isbn: String): Action[AnyContent] =
     Action.async { implicit request =>
       service
-        .getGoogleBook(search = search, term = term)
+        .getGoogleBook(isbn)
         .fold(
           error =>
             Status(error.httpResponseStatus)(
               Json.toJson(error.reason)
             ),
-          dataModel =>
-            Ok(Json.toJson(dataModel))
+          book =>
+            Ok(Json.toJson(book))
         )
     }
-
-  def example(): Action[AnyContent] = Action.async {implicit request =>
-    Future.successful(Ok(views.html.example()))
-  }
 }
