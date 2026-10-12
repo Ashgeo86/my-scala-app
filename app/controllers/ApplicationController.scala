@@ -3,7 +3,12 @@ package controllers
 import models.{APIError, DataModel}
 import play.api.libs.json.{JsError, JsSuccess, JsValue, Json}
 import play.api.mvc._
+import play.filters.csrf.CSRF
 import services.{ApplicationService, RepositoryService}
+import play.api.data.Form
+import play.api.data.Forms._
+import play.api.mvc.Request
+import models.NewBookForm
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -112,11 +117,47 @@ class ApplicationController @Inject()(
         )
     }
 
-  def addBook(): Action[AnyContent] = Action { implicit request =>
-    Ok(views.html.addBook(DataModel.dataModelForm))
+  def accessToken(implicit request: Request[_]) = {
+    CSRF.getToken
   }
 
-  def addBookForm(): Action[AnyContent] = Action { implicit request =>
-    ???
+  private val bookForm: Form[NewBookForm] = Form(
+    mapping(
+      "name" -> nonEmptyText,
+      "description" -> nonEmptyText,
+      "pageCount" -> number(min = 0)
+    )(NewBookForm.apply)(NewBookForm.unapply)
+  )
+
+  def addBook(): Action[AnyContent] = Action { implicit request =>
+    Ok(views.html.addBook(bookForm))
+  }
+
+  def addBookForm(): Action[AnyContent] = Action.async { implicit request =>
+    accessToken
+
+    bookForm.bindFromRequest().fold(
+      formWithErrors =>
+        Future.successful(
+          BadRequest(views.html.addBook(formWithErrors))
+        ),
+
+      formData => {
+        val book = DataModel(
+          _id = java.util.UUID.randomUUID().toString,
+          name = formData.name,
+          description = formData.description,
+          pageCount = formData.pageCount
+        )
+
+        repoService.create(book).map {
+          case Right(savedBook) =>
+            Created(Json.toJson(savedBook))
+
+          case Left(error) =>
+            Status(error.httpResponseStatus)(Json.toJson(error.reason))
+        }
+      }
+    )
   }
 }
