@@ -19,7 +19,6 @@ class ApplicationController @Inject()(
   extends BaseController
     with I18nSupport {
 
-  // Shared error handling for repository and service operations
   private def handleResult[A](
                                result: Future[Either[APIError, A]]
                              )(onSuccess: A => Result): Future[Result] =
@@ -33,7 +32,6 @@ class ApplicationController @Inject()(
         )
     }
 
-  // Shared JSON body validation
   private def withJsonBody[A: Reads](
                                       onValid: A => Future[Result]
                                     ): Action[JsValue] =
