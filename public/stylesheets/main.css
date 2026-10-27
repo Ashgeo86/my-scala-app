@@ -1,7 +1,115 @@
+* {
+    box-sizing: border-box;
+}
+
 body {
-    background-color: yellow;
+    margin: 0;
+    min-height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: #f3f5f9;
+    color: #243047;
+}
+
+main {
+    width: min(100% - 32px, 680px);
+    margin: 60px auto;
 }
 
 h1 {
-    color: red;
+    margin: 0 0 12px;
+    color: #172554;
+    font-size: 2.2rem;
+    letter-spacing: -1px;
+}
+
+p {
+    color: #64748b;
+    line-height: 1.6;
+}
+
+.book-form {
+    padding: 32px;
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    box-shadow: 0 12px 35px rgba(15, 23, 42, 0.07);
+}
+
+.book-form dl {
+    margin: 0 0 20px;
+}
+
+.book-form dt {
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #334155;
+}
+
+.book-form input,
+.book-form textarea {
+    display: block;
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    background: #fff;
+    color: #1e293b;
+    font: inherit;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.book-form textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.book-form input:focus,
+.book-form textarea:focus {
+    outline: none;
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.13);
+}
+
+.book-form .error,
+.book-form .errors {
+    color: #b91c1c;
+    font-size: 0.9rem;
+}
+
+.book-form button {
+    width: 100%;
+    margin-top: 8px;
+    padding: 14px 20px;
+    border: none;
+    border-radius: 9px;
+    background: #4f46e5;
+    color: white;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.2s;
+}
+
+.book-form button:hover {
+    background: #4338ca;
+    transform: translateY(-1px);
+}
+
+.book-form button:focus-visible {
+    outline: 3px solid #a5b4fc;
+    outline-offset: 3px;
+}
+
+@media (max-width: 480px) {
+    main {
+        margin: 28px auto;
+    }
+
+    .book-form {
+        padding: 22px;
+    }
+
+    h1 {
+        font-size: 1.8rem;
+    }
 }

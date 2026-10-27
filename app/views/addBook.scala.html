@@ -2,18 +2,20 @@
 @import play.api.data.Form
 @import helper._
 
-@(bookForm: Form[NewBookForm])(implicit request: RequestHeader, messages: Messages)
+@(bookForm: Form[NewBookForm])(implicit request: play.api.mvc.RequestHeader, messages: play.api.i18n.Messages)
 
 @main("Add a Book") {
+<main>
     <h1>Add a Book</h1>
+    <p>Add a new title to your personal library.</p>
 
-        @helper.form(action = routes.ApplicationController.addBookForm()) {
-        @helper.CSRF.formField
-
+    @helper.form(action = routes.ApplicationController.addBookForm(), Symbol("class") -> "book-form") {
+    @helper.CSRF.formField
     @helper.inputText(bookForm("name"))
     @helper.textarea(bookForm("description"))
     @helper.inputText(bookForm("pageCount"))
 
     <button type="submit">Add Book</button>
     }
+</main>
 }
