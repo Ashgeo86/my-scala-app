@@ -64,4 +64,45 @@ class ApplicationControllerSpec
       status(result) mustBe NOT_FOUND
     }
   }
+
+  "ApplicationController addBookForm" should {
+    "save a valid book submitted through the browser form" in {
+      val repoService = mock[RepositoryService]
+      val appService = mock[ApplicationService]
+
+      val controller = new ApplicationController(
+        stubControllerComponents(),
+        repoService,
+        appService
+      )
+
+      val savedBook = DataModel(
+        "saved-book-id",
+        "Test Book",
+        "A test description",
+        120
+      )
+
+      (repoService.create _)
+        .expects(where { (book: DataModel) =>
+          book.name == "Test Book" &&
+            book.description == "A test description" &&
+            book.pageCount == 120
+        })
+        .returning(Future.successful(Right(savedBook)))
+
+      val request = FakeRequest(POST, "/books/new")
+        .withFormUrlEncodedBody(
+          "name" -> "Test Book",
+          "description" -> "A test description",
+          "pageCount" -> "120"
+        )
+
+      val result = controller.addBookForm()(request)
+
+      status(result) mustBe CREATED
+      contentAsJson(result) mustBe Json.toJson(savedBook)
+    }
+  }
+
 }
